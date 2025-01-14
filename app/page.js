@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const Dashboard = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <h1 className="text-2xl font-bold">Welcome to the Dashboard!</h1>
+      <Link href="/login">login</Link>
     </div>
   );
 };

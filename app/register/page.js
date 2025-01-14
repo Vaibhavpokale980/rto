@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"
 
 const Register = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -38,6 +38,7 @@ const Register = () => {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           className="w-full p-2 border mb-3"
         />
+
         <input
           type="email"
           placeholder="Email"
@@ -53,6 +54,7 @@ const Register = () => {
           className="w-full p-2 border mb-3"
         />
         <button type="submit" className="bg-blue-500 text-white p-2 w-full">Register</button>
+        <a href="/login">Login here</a>
       </form>
     </div>
   );
