@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   return (
@@ -11,7 +11,7 @@ const Navbar = () => {
         <ul className='flex text-lg gap-4'>
             <li>Home</li>
             <li>About Us</li>
-            <li>Login</li>
+            <li><a href="/login">Login</a></li>
         </ul>
     </nav>
   )

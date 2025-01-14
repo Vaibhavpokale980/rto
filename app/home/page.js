@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-
-const page = () => {
-  return (
-    <div>
-      <a href="/register-army" className='text-[30px]'>register as army</a>
-    </div>
-  )
-}
-
-export default page
-=======
 'use client'
 import { useState } from 'react'
 import Navbar from '../components/Navbar.js'
@@ -48,4 +35,3 @@ const page=()=> {
 }
 
 export default page;
->>>>>>> 41b5eada0f6b047f39d258407327fffd25152c7c

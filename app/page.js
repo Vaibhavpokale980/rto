@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Dashboard = () => {
   const router = useRouter();
@@ -13,6 +14,7 @@ const Dashboard = () => {
       if (!res.ok) {
         router.push("/login");
       }
+      else router.push("/home")
     };
 
     checkAuth();
