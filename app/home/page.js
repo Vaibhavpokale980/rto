@@ -1,51 +1,80 @@
-<<<<<<< HEAD
-import React from 'react'
+"use client";
+import { useRouter } from "next/navigation.js";
+import Navbar from "../components/Navbar.js";
+import { useState, useEffect } from "react";
 
-const page = () => {
-  return (
-    <div>
-      <a href="/register-army" className='text-[30px]'>register as army</a>
-    </div>
-  )
-}
+const Page = () => {
+  const router = useRouter();
+  const [approved,setApproved]=useState(false);
 
-export default page
-=======
-'use client'
-import { useState } from 'react'
-import Navbar from '../components/Navbar.js'
-// import { useRouter } from 'next/router.js'
-import { useRouter } from 'next/navigation.js'
+  const handleNavigation = (path) => {
+    router.push(path);
+  };
 
-const page=()=> {
-
-    const router = useRouter(); // Initialize the router
-
-    const handleNavigation = (path) => {
-      router.push(path); // Navigate to the specified path
-    };
+  useEffect(() => {
+    const app=async()=>{
+    const res = await fetch("/api/auth/approved", {
+      method: "GET", // Pass FormData directly
+    });
+    console.log(res.appro);
+    setApproved(res.appro);
+  }
+  app();
+  
+  }, [])
+  
 
   return (
     <>
-        <Navbar/>
-        <div className="hero w-full flex flex-col items-center mt-24 gap-5">
-          <div className="title text-5xl flex flex-col w-full items-center font-bold">
-            <span>Welcome to</span>
-            <span>Regional Transport Office</span>
-          </div>
-          <div className="desc text-gray-700">Lorem ipsum dolor sit amet consectetur adipisicing hello elit. Minima odit eligendi hello baccho  </div>
-
-          <div className="search flex w-[70%] justify-center">
-
-          </div>
+      <Navbar />
+      <div className="hero w-full flex flex-col items-center mt-24 gap-8 px-8">
+        <div className="title text-5xl flex flex-col w-full items-center font-bold text-center">
+          <span className="text-gray-900">Welcome to</span>
+          <span className="text-blue-600">Regional Transport Office</span>
         </div>
-        <div className="buttons mt-10 text-center">
-        <button type="button" onClick={()=>handleNavigation('/login')} className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Login as Job Seeker</button>
-        <button type="button" onClick={()=>handleNavigation('/army/register')} className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Register as Military Personell</button>
+        <div className="desc text-gray-700 text-center max-w-2xl">
+          Empowering seamless services for citizens and esteemed personnel. 
+          Explore our platform for a smarter, more efficient experience.
         </div>
-    </>
-  )
+        {!approved&&
+        <button
+            type="button"
+            onClick={() => handleNavigation("/army/register")}
+            className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
+          >
+            Register as Military Personnel
+          </button>
 }
 
-export default page;
->>>>>>> 41b5eada0f6b047f39d258407327fffd25152c7c
+{approved && 
+        <div className="buttons mt-12 flex flex-wrap justify-center gap-6">
+          
+          <button
+            type="button"
+            onClick={() => handleNavigation("/genqr")}
+            className="text-white bg-gradient-to-br from-purple-500 to-pink-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-pink-800 font-medium rounded-lg text-lg px-6 py-3"
+          >
+            Generate QR
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavigation("/book")}
+            className="text-white bg-gradient-to-br from-orange-400 to-red-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-red-800 font-medium rounded-lg text-lg px-6 py-3"
+          >
+            Book Appointment
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavigation("/tracking")}
+            className="text-white bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
+          >
+            Application Tracking
+          </button>
+        </div>
+}
+      </div>
+    </>
+  );
+};
+
+export default Page;

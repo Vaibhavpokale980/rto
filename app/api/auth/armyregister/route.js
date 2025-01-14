@@ -69,6 +69,7 @@ export async function POST(req) {
       aadharCardNo,
       defenceIdNo,
       idCard: filePath,
+      approved:true,
     });
 
     await newUserDetails.save();

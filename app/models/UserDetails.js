@@ -25,6 +25,7 @@ const userDetailsSchema = new mongoose.Schema(
       type: String, // File path to the uploaded ID card
       required: true,
     },
+    approved:{type:Boolean},
   },
   { timestamps: true } // Automatically adds `createdAt` and `updatedAt` fields
 );

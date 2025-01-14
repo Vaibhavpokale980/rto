@@ -18,6 +18,8 @@ const page = () => {
     setformdata({ ...formdata, [name]: value });
   };
 
+  const router=useRouter();
+
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     setformdata({ ...formdata, [name]: files[0] });
@@ -41,6 +43,7 @@ const page = () => {
   
       if (response.ok) {
         alert("Registration successful!");
+        router.push('/home');
       } else {
         alert(`Error: ${result.error}`);
       }
