@@ -23,6 +23,14 @@ const Navbar = () => {
     }
   };
 
+  
+  const signout= async()=>{
+    const res = await fetch("/api/auth/signout",{
+      method:"POST"
+    })
+    router.push('/login')
+  }
+
   useEffect(() => {
     checkAuth(); // Check authentication when the component mounts
   }, []);
@@ -35,8 +43,8 @@ const Navbar = () => {
         <span>O</span>
       </div>
       <ul className="flex text-lg gap-4 items-center">
-        <li>Home</li>
-        <li>About Us</li>
+        <li className="cursor-pointer" onClick={()=>router.push('/home')}>Home</li>
+        <li  className="cursor-pointer">About Us</li>
         {registerid === "1" && <li onClick={() => router.push("/login")}>Login</li>}
         {registerid !== "1" && (
           <li>
@@ -95,7 +103,15 @@ const Navbar = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/army/register"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                      Update Profile
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={()=>signout()}
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Sign out
