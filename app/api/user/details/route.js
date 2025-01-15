@@ -17,9 +17,9 @@ export async function GET(req) {
 
         // Fetch user details from the UserDetails collection based on userId
         const userDetails = await UserDetails.findOne({ userId: id });
-        if (!userDetails) {
-            return NextResponse.json({ message: 'User details not found' }, { status: 404 });
-        }
+        // if (!userDetails) {
+        //     return NextResponse.json({ message: 'User details not found' }, { status: 404 });
+        // }
 
         // Fetch the user info from the User collection based on _id
         const user = await User.findById(id).exec();
@@ -31,8 +31,10 @@ export async function GET(req) {
         const userData = {
             name: user.name,
             email: user.email,
-            position: userDetails.position,
+            position: userDetails ? userDetails.position : "Common Man",
         };
+
+        console.log(userData);
 
         return NextResponse.json(userData, { status: 200 }); // Return the user data as response
     } catch (error) {
