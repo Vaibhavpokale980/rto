@@ -20,10 +20,12 @@ export async function GET(req) {
 
     // Use await with findOne and fix the query syntax
     const user = await UserDetails.findOne({ userId: userId });
+    console.log("zzzzzzzzzzzzzz",user)
     
     if (!user) {
       return NextResponse.json({ appro: false, error: "No User" }, { status: 401 });
     }
+    console.log("hihihihihihi")
 
     // Return the approved status from the user document
     return NextResponse.json({ appro: user.approved });
