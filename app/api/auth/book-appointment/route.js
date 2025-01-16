@@ -10,7 +10,7 @@ export async function POST(req) {
         console.log("mmmmmmmmmmmm",roler)
 
         // Log the values for debugging
-        console.log(option, date, registerid,city, "  AAAMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+        console.log(option, date, registerid,city,namer, "  AAAMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
 
         const newAppointment = await BookAppointment.create({
             option,
@@ -23,6 +23,8 @@ export async function POST(req) {
             name:namer,
 
         });
+
+        console.log("[[[[[[[[[[[[[[[[",newAppointment);
 
 
         await newAppointment.save();

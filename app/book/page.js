@@ -11,7 +11,7 @@ export default function AppointmentBooking() {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const res = await fetch("/api/auth/verify-token");
+            const res = await fetch("/api/auth/verify-token2");
             if (!res.ok) {
                 router.push("/login");
             }
@@ -21,6 +21,7 @@ export default function AppointmentBooking() {
                 console.log(data.user.id, "User ID fetched",data.rolex); // Debug log for fetched user id
                 setrole(data.rolex)
                 setnamer(data.namex)
+                console.log("nnnnnnnnnnnnnnnnnnnnnn",namer)
             }
         };
 

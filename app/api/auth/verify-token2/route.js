@@ -18,9 +18,25 @@ export async function GET(req) {
     console.log("2");
     // console.log(decoded," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
     // console.log("aaaaaaaaaaaaaaa",decoded);
-    
-    
+    const id=await decoded.id;
 
+    const user= await UserDetails.findOne({userId:id});
+    console.log("3");
+    if(!user)
+    {
+      // console.log("user not found");
+      return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen",namex:user.name }, { status: 200 });
+    }
+    else
+    {
+      console.log("user found",user.position);
+      if(user.position!="")
+      {
+        // console.log("I am a jawan")
+        return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"special" }, { status: 200 });
+      }
+
+    }
 
 
     return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen" }, { status: 200 });
