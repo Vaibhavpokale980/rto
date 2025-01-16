@@ -7,7 +7,7 @@ export async function POST(req) {
   console.log(process.env.MONGO_URI);
   await connectDB();
 
-  const { name, email, password } = await req.json();
+  const { city,name, email, password,pincode } = await req.json();
 
   try {
     console.log("12345678",email);
@@ -19,7 +19,8 @@ export async function POST(req) {
     console.log("2");
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newrtouser = new rtouser({ name, email, password: hashedPassword });
+    const newrtouser = new rtouser({ name, email, password: hashedPassword,pincode,city });
+    console.log("rrrrrrrrrrrrrrr",newrtouser,city);
     await newrtouser.save();
     console.log("3");
 
