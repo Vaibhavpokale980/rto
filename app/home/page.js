@@ -13,33 +13,24 @@ const Page = () => {
   };
 
   useEffect(() => {
-    const fetchApprovalStatus = async () => {
-      try {
-        const res = await fetch("/api/auth/approved");
-        const data = await res.json();
-        
-        if (res.ok) {
-          setApproved(data.appro);
-        } else {
-          console.error("Error fetching approval status:", data.error);
-        }
-      } catch (error) {
-        console.error("Failed to fetch approval status:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApprovalStatus();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>; // Add a loading state
+    const app=async()=>{
+    const res = await fetch("/api/auth/approved", {
+      method: "GET", // Pass FormData directly
+    });
+    const data=await res.json();
+    console.log("zzzzzzzzzzzzz",data.appro);
+    setApproved(data.appro);
   }
+  app();
+  
+  }, [])
+
+
 
   return (
     <>
       <Navbar />
+      
       <div className="hero w-full flex flex-col items-center mt-24 gap-8 px-8">
         <div className="title text-5xl flex flex-col w-full items-center font-bold text-center">
           <span className="text-gray-900">Welcome to</span>
@@ -49,6 +40,7 @@ const Page = () => {
           Empowering seamless services for citizens and esteemed personnel. 
           Explore our platform for a smarter, more efficient experience.
         </div>
+        {console.log("xxxxxxxxxx",approved)}
         
         {!approved && (
           <button
