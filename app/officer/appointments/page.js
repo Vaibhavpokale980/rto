@@ -4,32 +4,55 @@ import { useState, useEffect } from 'react';
 
 export default function Appointments() {
     const [appointments, setAppointments] = useState([]);
+    const [appointments1, setAppointments1] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Fetch appointments when the component mounts
+    // Fetch both sets of appointments
     useEffect(() => {
-        const fetchAppointments = async () => {
+        const fetchAllAppointments = async () => {
             try {
-                const response = await fetch('/api/auth/get-appointments');
-                const data = await response.json();
+                const [response1, response2] = await Promise.all([
+                    fetch('/api/auth/get-appointments'),
+                    fetch('/api/auth/get-appointments2'),
+                ]);
 
-                if (data.success) {
-                    setAppointments(data.data); // Set the appointments data
+                const data1 = await response1.json();
+                const data2 = await response2.json();
+
+                if (data1.success) {
+                    setAppointments(data1.data);
                 } else {
-                    setError(data.message); // Handle any errors
+                    setError(data1.message);
+                }
+
+                if (data2.success) {
+                    setAppointments1(data2.data);
+                } else {
+                    setError(data2.message);
                 }
             } catch (error) {
-                setError('Failed to fetch appointments'); // Handle network or fetch error
+                setError('Failed to fetch appointments');
             } finally {
-                setLoading(false); // Set loading to false once data is fetched
+                setLoading(false);
             }
         };
 
-        fetchAppointments();
+        fetchAllAppointments();
     }, []);
 
-    const handleApproval = async (id, status,) => {
+    // Sort the appointments with approved first, then by date
+    const sortAppointments = (appointmentsList) =>
+        [...appointmentsList].sort((a, b) => {
+            // Sort by approval status first
+            if (a.approved !== b.approved) {
+                return a.approved ? -1 : 1;
+            }
+            // If approval status is the same, sort by date
+            return new Date(a.date) - new Date(b.date); // Ascending order by date
+        });
+
+    const handleApproval = async (id, status) => {
         try {
             const res = await fetch(`/api/auth/update-appointment/approve?id=${id}`, {
                 method: 'PATCH',
@@ -38,11 +61,16 @@ export default function Appointments() {
             });
 
             if (res.ok) {
-                setAppointments((prev) =>
+                setAppointments((prev) => sortAppointments(
                     prev.map((appointment) =>
                         appointment._id === id ? { ...appointment, approved: status } : appointment
                     )
-                );
+                ));
+                setAppointments1((prev) => sortAppointments(
+                    prev.map((appointment) =>
+                        appointment._id === id ? { ...appointment, approved: status } : appointment
+                    )
+                ));
             } else {
                 alert('Failed to update approval status');
             }
@@ -50,7 +78,6 @@ export default function Appointments() {
             alert('An error occurred while updating approval status');
         }
     };
-
 
     const handleDone = async (id, status) => {
         try {
@@ -62,6 +89,11 @@ export default function Appointments() {
 
             if (res.ok) {
                 setAppointments((prev) =>
+                    prev.map((appointment) =>
+                        appointment._id === id ? { ...appointment, done: status } : appointment
+                    )
+                );
+                setAppointments1((prev) =>
                     prev.map((appointment) =>
                         appointment._id === id ? { ...appointment, done: status } : appointment
                     )
@@ -96,12 +128,14 @@ export default function Appointments() {
         );
     }
 
+    // Combine and sort appointments for rendering
+    const sortedAppointments = sortAppointments([...appointments, ...appointments1]);
+
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center">
             <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg">
                 <h1 className="text-3xl font-bold mb-4 text-center text-gray-100">All Booked Appointments</h1>
-
-                {appointments.length === 0 ? (
+                {sortedAppointments.length === 0 ? (
                     <div className="text-center text-white py-4">No appointments available.</div>
                 ) : (
                     <table className="min-w-full table-auto text-gray-100 border-separate border-spacing-2">
@@ -110,17 +144,21 @@ export default function Appointments() {
                                 <th className="py-2 px-4 text-left">Service</th>
                                 <th className="py-2 px-4 text-left">Date</th>
                                 <th className="py-2 px-4 text-left">Register ID</th>
+                                <th className="py-2 px-4 text-left">Name</th>
+                                <th className="py-2 px-4 text-left">Role</th>
                                 <th className="py-2 px-4 text-left">Approved</th>
                                 <th className="py-2 px-4 text-left">Done</th>
                                 <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {appointments.map((appointment) => (
+                            {sortedAppointments.map((appointment) => (
                                 <tr key={appointment._id} className="hover:bg-gray-700">
                                     <td className="py-2 px-4">{appointment.option}</td>
                                     <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{appointment._id}</td>
+                                    <td className="py-2 px-4">{appointment.name}</td>
+                                    <td className="py-2 px-4">{appointment.role}</td>
                                     <td className="py-2 px-4">
                                         {appointment.approved ? (
                                             <span className="text-green-400">Approved</span>
@@ -136,7 +174,6 @@ export default function Appointments() {
                                         )}
                                     </td>
                                     <td className="py-2 px-4 flex space-x-2">
-                                        {/* Approve/Reject Buttons */}
                                         {appointment.approved ? (
                                             <button
                                                 className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
@@ -153,7 +190,6 @@ export default function Appointments() {
                                             </button>
                                         )}
 
-                                        {/* Done/Not Done Buttons */}
                                         {appointment.done ? (
                                             <button
                                                 className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"

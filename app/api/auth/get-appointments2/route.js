@@ -36,8 +36,8 @@ export async function GET(req) {
         const rto = await rtouser1.findById(registerid);
 
         // Fetch appointments that match the registerid
-        const appointments = await BookAppointment.find({ city:rto.city ,role:"special"});
-        console.log("qqqqqqqqqqqqqqqqqqqqqqqq",appointments);
+        const appointments = await BookAppointment.find({ city:rto.city ,role:"citizen"});
+        console.log("uuuuuuuuuuuuuuuuuu",appointments);
         return NextResponse.json(
             { success: true, data: appointments },
             { status: 200 }

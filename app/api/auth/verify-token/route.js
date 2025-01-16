@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import UserDetails from '@/app/models/UserDetails';
 
 export async function GET(req) {
   const token = req.cookies.get('token'); // Get token from the cookie
@@ -14,9 +15,34 @@ export async function GET(req) {
     // console.log("aaaaaaaaaaaaaaaaaaa")
     const decoded = jwt.verify(token.value, process.env.JWT_SECRET);
     // console.log(decoded," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
+    // console.log("aaaaaaaaaaaaaaa",decoded);
+    const id=await decoded.id;
+
+    const user= await UserDetails.findOne({userId:id});
+    if(!user)
+    {
+      // console.log("user not found");
+      return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen",namex:user.name }, { status: 200 });
+    }
+    else
+    {
+      console.log("user found",user.position);
+      if(user.position!="")
+      {
+        // console.log("I am a jawan")
+        return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"special" }, { status: 200 });
+      }
+
+    }
+
+
+    return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen" }, { status: 200 });
+
+
+
 
     // Token is valid
-    return NextResponse.json({ message: 'Token is valid', user: decoded }, { status: 200 });
+    
   } catch (error) {
     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
   }
