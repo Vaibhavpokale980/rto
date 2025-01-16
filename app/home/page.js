@@ -30,7 +30,6 @@ const Page = () => {
   return (
     <>
       <Navbar />
-      
       <div className="hero w-full flex flex-col items-center mt-24 gap-8 px-8">
         <div className="title text-5xl flex flex-col w-full items-center font-bold text-center">
           <span className="text-gray-900">Welcome to</span>
@@ -48,7 +47,7 @@ const Page = () => {
             onClick={() => handleNavigation("/army/register")}
             className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
           >
-            Register as Military Personnel
+            Register as an Esteemed Citizen
           </button>
         )}
         

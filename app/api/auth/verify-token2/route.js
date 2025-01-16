@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import UserDetails from '@/app/models/UserDetails';
+import User from '@/app/models/User';
 
 export async function GET(req) {
   const token = req.cookies.get('token'); // Get token from the cookie
@@ -19,13 +20,15 @@ export async function GET(req) {
     // console.log(decoded," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
     // console.log("aaaaaaaaaaaaaaa",decoded);
     const id=await decoded.id;
+    console.log(id);
 
     const user= await UserDetails.findOne({userId:id});
+    const useme=await User.findById(id);
     console.log("3");
     if(!user)
     {
-      // console.log("user not found");
-      return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen",namex:user.name }, { status: 200 });
+      console.log("user not found");
+      return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen",namex:useme.name }, { status: 200 });
     }
     else
     {
@@ -33,13 +36,13 @@ export async function GET(req) {
       if(user.position!="")
       {
         // console.log("I am a jawan")
-        return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"special" }, { status: 200 });
+        return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"special",namex:useme.name }, { status: 200 });
       }
 
     }
 
 
-    return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen" }, { status: 200 });
+    return NextResponse.json({ message: 'Token is valid', user: decoded, rolex:"citizen",namex:useme.name }, { status: 200 });
 
 
 

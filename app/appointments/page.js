@@ -11,7 +11,7 @@ export default function Appointments() {
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
-                const response = await fetch('/api/auth/get-appointments');
+                const response = await fetch('/api/auth/get-appointmenter');
                 const data = await response.json();
 
                 if (data.success) {
