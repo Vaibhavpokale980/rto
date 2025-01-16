@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Corrected import
+import { Condiment } from 'next/font/google';
 
 const ApplicationsPage = () => {
     const router = useRouter();
@@ -17,6 +18,7 @@ const ApplicationsPage = () => {
             }
             else {
                 let data = await res.json();
+                console.log(data, " AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 setregisterid(data.user.id); // Set registerid after successful response
                 console.log(data.user.id, "User ID fetched"); // Debug log for fetched user id
             }

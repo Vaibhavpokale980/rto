@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 const ServiceFormPage = (req) => {
     const searchParams = useSearchParams();
     const regiserid = searchParams.get('id');
+    
 
     const [formData, setFormData] = useState({
         service: '',
@@ -43,7 +44,7 @@ const ServiceFormPage = (req) => {
 
             if (response.ok) {
                 alert('Service details submitted successfully!');
-                router.push(`/officer/applications?id=`); // Redirect to services list or another page
+                router.push(`/officer/applications`); // Redirect to services list or another page
             } else {
                 alert(`Error: ${result.error}`);
             }

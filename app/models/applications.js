@@ -6,6 +6,7 @@ const ApplicationSchema = new mongoose.Schema({
   doneDate: { type: Date, required: true },  // Ensure this is named `doneDate`
   status: { type: String, required: true },
   registerid: { type: String, required: true },
+  city: { type: String, required: true },
 });
 
 // Export the model. Name the model correctly (BookAppointment)

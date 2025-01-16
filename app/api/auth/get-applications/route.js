@@ -1,19 +1,18 @@
 import connectDB from "@/app/lib/db";
 import Application from "@/app/models/applications";
+import rtouser1 from "@/app/models/rtouser"; // Hypothetical model for users or registerid storage
 import jwt from "jsonwebtoken";
-import { cookies } from "next/headers"; // Import cookies to access cookies in Next.js
-import { NextResponse } from "next/server"; // Import NextResponse
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
     await connectDB();
-    
-    try {
-        // Get the token from cookies using next/headers
-        const cookieStore = await cookies();
-        const token = cookieStore.get('token'); // Adjusted to Next.js 13 cookie handling
-        console.log(token);
 
-        // If token is not found, return unauthorized response
+    try {
+        // Get the token from cookies
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token');
+
         if (!token) {
             return NextResponse.json(
                 { success: false, message: "Token not found" },
@@ -21,13 +20,14 @@ export async function GET(req) {
             );
         }
 
+        // Parse the URL to get query parameters
         const url = new URL(req.url);
         const id = url.searchParams.get('id');
 
-        // Verify the token and extract the user id (registerid)
+        // Verify the token
         let decoded;
         try {
-            decoded = jwt.verify(token.value, process.env.JWT_SECRET); // Verify the JWT token using the secret
+            decoded = jwt.verify(token.value, process.env.JWT_SECRET);
         } catch (error) {
             return NextResponse.json(
                 { success: false, message: "Invalid or expired token" },
@@ -35,24 +35,39 @@ export async function GET(req) {
             );
         }
 
-        const registerid = id; // The decoded ID is the registerid (user._id from the token)
-        console.log(registerid,"aaaaaaaaaaaaa")
-        // Fetch appointments that match the registerid
-        const applications = await Application.find({ registerid });
-
-        if (!applications || applications.length === 0) {
+        // Fetch the user by registerid and retrieve the city
+        const user = await rtouser1.findById(id);
+        if (!user) {
             return NextResponse.json(
-                { success: false, message: "No applications found" },
+                { success: false, message: "User not found" },
                 { status: 404 }
             );
         }
 
-        // console.log(applications)
+        const city = user.city;
+        console.log(city, " cityyyyyyyyyyyyyyy")
+        if (!city) {
+            return NextResponse.json(
+                { success: false, message: "City not found for the user" },
+                { status: 404 }
+            );
+        }
+
+        // Fetch applications based on the city
+        // Perform a case-insensitive search for city
+        const applications = await Application.find({ city: { $regex: new RegExp(`^${city}$`, 'i') } });
+
+        console.log(applications," aplplkdsjhbgs,jbg")
+        if (!applications || applications.length === 0) {
+            return NextResponse.json(
+                { success: false, message: "No applications found for the city" }
+            );
+        }
 
         return NextResponse.json(applications, { status: 200 });
 
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error);
         return NextResponse.json(
             { success: false, message: error.message || "An error occurred" },
             { status: 500 }
