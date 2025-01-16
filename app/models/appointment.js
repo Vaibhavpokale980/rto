@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 const appointmentSchema = new mongoose.Schema({
   option: { type: String, required: true },
   date: { type: Date, required: true },
+  city: { type: String, required: true },
   registerid: { type: String, required: true },
   approved: { type: Boolean, default: false },
   done: { type: Boolean, default: false },

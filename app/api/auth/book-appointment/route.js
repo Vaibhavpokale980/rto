@@ -5,14 +5,15 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     await connectDB(); // Ensure DB is connected
     try {
-        const { option, date, registerid } = await req.json(); // Parse the request body
+        const { option, date,city, registerid } = await req.json(); // Parse the request body
 
         // Log the values for debugging
-        console.log(option, date, registerid, "  AAAMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+        console.log(option, date, registerid,city, "  AAAMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
 
         const newAppointment = await BookAppointment.create({
             option,
             date,
+            city,
             registerid,
             approved: false, // Optional, default is false
             done: false, // Optional, default is false

@@ -27,9 +27,11 @@ export default function AppointmentBooking() {
         option: '',
         date: '',
         registerid: '',
+        city: ''
     });
 
     const [minDate, setMinDate] = useState('');
+    const cities = ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Kolhapur"];
 
     useEffect(() => {
         // Get today's date
@@ -92,6 +94,26 @@ export default function AppointmentBooking() {
                             <option value="vehicle_registration">Vehicle Registration</option>
                             <option value="road_tax_payment">Road Tax Payment</option>
                             <option value="number_plate">Number Plate</option>
+                        </select>
+                    </div>
+
+                    {/* City Selector */}
+                    <div>
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                            Select City
+                        </label>
+                        <select
+                            id="city"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
+                            className="mt-1 block h-10 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            required
+                        >
+                            <option value="" disabled>Choose a city</option>
+                            {cities.map((city) => (
+                                <option key={city} value={city}>{city}</option>
+                            ))}
                         </select>
                     </div>
 

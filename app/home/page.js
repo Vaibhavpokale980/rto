@@ -5,24 +5,37 @@ import { useState, useEffect } from "react";
 
 const Page = () => {
   const router = useRouter();
-  const [approved,setApproved]=useState(false);
+  const [approved, setApproved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleNavigation = (path) => {
     router.push(path);
   };
 
   useEffect(() => {
-    const app=async()=>{
-    const res = await fetch("/api/auth/approved", {
-      method: "GET", // Pass FormData directly
-    });
-    console.log(res.appro);
-    setApproved(res.appro);
+    const fetchApprovalStatus = async () => {
+      try {
+        const res = await fetch("/api/auth/approved");
+        const data = await res.json();
+        
+        if (res.ok) {
+          setApproved(data.appro);
+        } else {
+          console.error("Error fetching approval status:", data.error);
+        }
+      } catch (error) {
+        console.error("Failed to fetch approval status:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApprovalStatus();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Add a loading state
   }
-  app();
-  
-  }, [])
-  
 
   return (
     <>
@@ -36,42 +49,42 @@ const Page = () => {
           Empowering seamless services for citizens and esteemed personnel. 
           Explore our platform for a smarter, more efficient experience.
         </div>
-        {!approved&&
-        <button
+        
+        {!approved && (
+          <button
             type="button"
             onClick={() => handleNavigation("/army/register")}
             className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
           >
             Register as Military Personnel
           </button>
-}
-
-{approved && 
-        <div className="buttons mt-12 flex flex-wrap justify-center gap-6">
-          
-          <button
-            type="button"
-            onClick={() => handleNavigation("/genqr")}
-            className="text-white bg-gradient-to-br from-purple-500 to-pink-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-pink-800 font-medium rounded-lg text-lg px-6 py-3"
-          >
-            Generate QR
-          </button>
-          <button
-            type="button"
-            onClick={() => handleNavigation("/book")}
-            className="text-white bg-gradient-to-br from-orange-400 to-red-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-red-800 font-medium rounded-lg text-lg px-6 py-3"
-          >
-            Book Appointment
-          </button>
-          <button
-            type="button"
-            onClick={() => handleNavigation("/tracking")}
-            className="text-white bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
-          >
-            Application Tracking
-          </button>
-        </div>
-}
+        )}
+        
+        {approved && (
+          <div className="buttons mt-12 flex flex-wrap justify-center gap-6">
+            <button
+              type="button"
+              onClick={() => handleNavigation("/generate-qr")}
+              className="text-white bg-gradient-to-br from-purple-500 to-pink-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-pink-800 font-medium rounded-lg text-lg px-6 py-3"
+            >
+              Generate QR
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNavigation("/book")}
+              className="text-white bg-gradient-to-br from-orange-400 to-red-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-red-800 font-medium rounded-lg text-lg px-6 py-3"
+            >
+              Book Appointment
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNavigation("/tracking")}
+              className="text-white bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-blue-800 font-medium rounded-lg text-lg px-6 py-3"
+            >
+              Application Tracking
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
