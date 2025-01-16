@@ -112,7 +112,7 @@ const Navbar = () => {
                   <li>
                     <a
                       onClick={()=>signout()}
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      className="block px-4 py-2 hover:bg-gray-100 curor-pointer dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Sign out
                     </a>

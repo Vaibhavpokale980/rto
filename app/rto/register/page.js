@@ -4,14 +4,14 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation"
 
 const Register = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "",city:"",pincode:"" });
   const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+    console.log(form);
     const res = await fetch("/api/auth/rto/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -32,9 +32,25 @@ const Register = () => {
         {error && <p className="text-red-500">{error}</p>}
         <input
           type="text"
-          placeholder="Name"
+          placeholder="username"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
+          className="w-full p-2 border mb-3"
+        />
+
+        <input
+          type="city"
+          placeholder="City"
+          value={form.city}
+          onChange={(e) => setForm({ ...form, city: e.target.value })}
+          className="w-full p-2 border mb-3"
+        />
+
+        <input
+          type="pincode"
+          placeholder="pincode"
+          value={form.pincode}
+          onChange={(e) => setForm({ ...form, pincode: e.target.value })}
           className="w-full p-2 border mb-3"
         />
 

@@ -7,7 +7,7 @@ export async function GET(req) {
   const token = req.cookies.get('token');
   
   if (!token) {
-    return NextResponse.json({ appro: false, error: 'No token provided' }, { status: 401 });
+    return NextResponse.json({ appro: false, error: 'No token provided' });
   }
 
   try {
@@ -15,7 +15,7 @@ export async function GET(req) {
     const userId = decoded.id;
 
     if (!userId) {
-      return NextResponse.json({ appro: false, error: "Invalid token" }, { status: 401 });
+      return NextResponse.json({ appro: false, error: "Invalid token" });
     }
 
     // Use await with findOne and fix the query syntax
@@ -23,7 +23,7 @@ export async function GET(req) {
     console.log("zzzzzzzzzzzzzz",user)
     
     if (!user) {
-      return NextResponse.json({ appro: false, error: "No User" }, { status: 401 });
+      return NextResponse.json({ appro: false, error: "No User" });
     }
     console.log("hihihihihihi")
 

@@ -52,7 +52,6 @@ const Page = () => {
           </button>
         )}
         
-        {approved && (
           <div className="buttons mt-12 flex flex-wrap justify-center gap-6">
             <button
               type="button"
@@ -76,7 +75,7 @@ const Page = () => {
               Application Tracking
             </button>
           </div>
-        )}
+        
       </div>
     </>
   );

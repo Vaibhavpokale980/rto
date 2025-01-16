@@ -43,7 +43,7 @@ const ServiceFormPage = (req) => {
 
             if (response.ok) {
                 alert('Service details submitted successfully!');
-                router.push('/services'); // Redirect to services list or another page
+                router.push(`/officer/applications?id=`); // Redirect to services list or another page
             } else {
                 alert(`Error: ${result.error}`);
             }

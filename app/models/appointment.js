@@ -8,6 +8,8 @@ const appointmentSchema = new mongoose.Schema({
   registerid: { type: String, required: true },
   approved: { type: Boolean, default: false },
   done: { type: Boolean, default: false },
+  role:{type:String},
+  name:{type:String},
 });
 
 // Export the model. Name the model correctly (BookAppointment)

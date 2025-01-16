@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 export default function AppointmentBooking() {
     const router = useRouter();
     const [registerid, setregisterid] = useState(''); // Initializing registerid as an empty string
+    const [role,setrole]=useState("citizen")
+    const [namer,setnamer]=useState("user");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -16,7 +18,9 @@ export default function AppointmentBooking() {
             else {
                 let data = await res.json();
                 setregisterid(data.user.id); // Set registerid after successful response
-                console.log(data.user.id, "User ID fetched"); // Debug log for fetched user id
+                console.log(data.user.id, "User ID fetched",data.rolex); // Debug log for fetched user id
+                setrole(data.rolex)
+                setnamer(data.namex)
             }
         };
 
@@ -27,7 +31,7 @@ export default function AppointmentBooking() {
         option: '',
         date: '',
         registerid: '',
-        city: ''
+        city: '',
     });
 
     const [minDate, setMinDate] = useState('');
@@ -57,10 +61,11 @@ export default function AppointmentBooking() {
         e.preventDefault();
 
         // Before submitting the form, ensure that registerid is in the form data
-        const updatedFormData = { ...formData, registerid: registerid };
+        const updatedFormData = { ...formData, registerid: registerid,roler:role,name:namer };
+        // console.log("tttttttttttttttttt",role);
 
         console.log('Appointment Details:', updatedFormData); // Log the updated form data
-
+        
         const res = await fetch("/api/auth/book-appointment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

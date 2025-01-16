@@ -30,7 +30,7 @@ const ApplicationsPage = () => {
         const fetchApplications = async () => {
             if (!id) return; // Ensure id is set before making the fetch request
             try {
-                const response = await fetch(`/api/auth/get-applications?id=${id}`);
+                const response = await fetch(`/api/auth/get-applications-user?id=${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch applications');
                 }

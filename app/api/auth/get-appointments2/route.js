@@ -1,16 +1,15 @@
 import connectDB from "@/app/lib/db";
-import Application from "@/app/models/applications";
+import BookAppointment from "@/app/models/appointment";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers"; // Import cookies to access cookies in Next.js
 import { NextResponse } from "next/server"; // Import NextResponse
+import rtouser1 from "@/app/models/rtouser";
 
 export async function GET(req) {
     await connectDB();
-    
     try {
-        // Get the token from cookies using next/headers
-        const cookieStore = await cookies();
-        const token = cookieStore.get('token'); // Adjusted to Next.js 13 cookie handling
+        // Get the token from the cookies
+        const token = req.cookies.get('token');
         console.log(token);
 
         // If token is not found, return unauthorized response
@@ -20,9 +19,6 @@ export async function GET(req) {
                 { status: 401 }
             );
         }
-
-        const url = new URL(req.url);
-        const id = url.searchParams.get('id');
 
         // Verify the token and extract the user id (registerid)
         let decoded;
@@ -35,26 +31,29 @@ export async function GET(req) {
             );
         }
 
-        const registerid = id; // The decoded ID is the registerid (user._id from the token)
-        console.log(registerid,"aaaaaaaaaaaaa")
+        const registerid = decoded.id; // The decoded ID is the registerid (user._id from the token)
+        console.log(decoded.id)
+        const rto = await rtouser1.findById(registerid);
+
         // Fetch appointments that match the registerid
-        const applications = await Application.find({ registerid });
+        const appointments = await BookAppointment.find({
+            city: { $regex: new RegExp(`^${rto.city}$`, "i") },
+            role: "citizen",
+        });
 
-        if (!applications || applications.length === 0) {
-            return NextResponse.json(
-                { success: false, message: "No applications found" },
-                { status: 404 }
-            );
-        }
+        // console.lof()
 
-        // console.log(applications)
-
-        return NextResponse.json(applications, { status: 200 });
+        console.log(rto.city,"uuuuuuuuuuuuuuuuuu", appointments);
+        console.log()
+        return NextResponse.json(
+            { success: true, data: appointments },
+            { status: 200 }
+        );
 
     } catch (error) {
         console.error(error); // Log the error for debugging
         return NextResponse.json(
-            { success: false, message: error.message || "An error occurred" },
+            { success: false, message: error.message },
             { status: 500 }
         );
     }

@@ -3,6 +3,7 @@ import BookAppointment from "@/app/models/appointment";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers"; // Import cookies to access cookies in Next.js
 import { NextResponse } from "next/server"; // Import NextResponse
+import rtouser1 from "@/app/models/rtouser";
 
 export async function GET(req) {
     await connectDB();
@@ -31,10 +32,12 @@ export async function GET(req) {
         }
 
         const registerid = decoded.id; // The decoded ID is the registerid (user._id from the token)
+        console.log(decoded.id)
+        const rto = await rtouser1.findById(registerid);
 
         // Fetch appointments that match the registerid
-        const appointments = await BookAppointment.find({ registerid });
-
+        const appointments = await BookAppointment.find({ city:rto.city ,role:"special"});
+        console.log("qqqqqqqqqqqqqqqqqqqqqqqq",appointments);
         return NextResponse.json(
             { success: true, data: appointments },
             { status: 200 }

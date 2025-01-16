@@ -22,7 +22,7 @@ const Login = () => {
     if (!res.ok) {
       setError(data.error);
     } else {
-      router.push("/home");
+      router.push("/officer/appointments");
     }
   };
 

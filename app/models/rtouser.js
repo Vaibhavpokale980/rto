@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   pincode:{type:String},
+  city:{type:String},
 });
 
 const rtouser1 = mongoose.models.rtouser || mongoose.model("rtouser", userSchema);

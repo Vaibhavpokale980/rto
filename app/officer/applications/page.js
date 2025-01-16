@@ -1,11 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [registerid, setregisterid] = useState(''); 
   const [formData, setFormData] = useState({
     service: '',
     doneDate: '',
@@ -13,11 +15,31 @@ const ApplicationsPage = () => {
     registerid: '',
   });
 
+  const router=useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+        const res = await fetch("/api/auth/verify-token");
+        if (!res.ok) {
+            router.push("/rto/login");
+        }
+        else {
+            let data = await res.json();
+            setregisterid(data.user.id); // Set registerid after successful response
+            console.log(data.user.id, "User ID fetched",data.rolex); // Debug log for fetched user id
+            setrole(data.rolex)
+            setnamer(data.namex)
+        }
+    };
+
+    checkAuth();
+}, [router]);
+
   // Fetch all applications when the component mounts
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await fetch('/api/auth/get-applications');
+        const response = await fetch(`/api/auth/get-applications?id=${registerid}`);
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }

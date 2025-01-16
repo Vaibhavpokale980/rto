@@ -5,7 +5,9 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     await connectDB(); // Ensure DB is connected
     try {
-        const { option, date,city, registerid } = await req.json(); // Parse the request body
+        const { option, date,city, registerid,roler,name } = await req.json(); // Parse the request body
+        const namer=name;
+        console.log("mmmmmmmmmmmm",roler)
 
         // Log the values for debugging
         console.log(option, date, registerid,city, "  AAAMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
@@ -17,6 +19,9 @@ export async function POST(req) {
             registerid,
             approved: false, // Optional, default is false
             done: false, // Optional, default is false
+            role:roler,
+            name:namer,
+
         });
 
 
