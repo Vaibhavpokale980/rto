@@ -169,6 +169,8 @@ export default function Appointments() {
                                                 Mark Done
                                             </button>
                                         )}
+
+                                        <a href={`/officer/make-application?id=${appointment.registerid}`}>Make application</a>
                                     </td>
                                 </tr>
                             ))}
