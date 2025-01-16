@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Appointments() {
     const [appointments, setAppointments] = useState([]);
     const [appointments1, setAppointments1] = useState([]);
+    const [doneAppointments, setDoneAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const router=useRouter();
 
     // Fetch both sets of appointments
     useEffect(() => {
@@ -21,13 +24,15 @@ export default function Appointments() {
                 const data2 = await response2.json();
 
                 if (data1.success) {
-                    setAppointments(data1.data);
+                    setAppointments(data1.data.filter((appt) => !appt.done)); // Only non-done appointments
+                    setDoneAppointments(data1.data.filter((appt) => appt.done)); // Done appointments
                 } else {
                     setError(data1.message);
                 }
 
                 if (data2.success) {
-                    setAppointments1(data2.data);
+                    setAppointments1(data2.data.filter((appt) => !appt.done));
+                    setDoneAppointments((prev) => [...prev, ...data2.data.filter((appt) => appt.done)]);
                 } else {
                     setError(data2.message);
                 }
@@ -41,15 +46,12 @@ export default function Appointments() {
         fetchAllAppointments();
     }, []);
 
-    // Sort the appointments with approved first, then by date
     const sortAppointments = (appointmentsList) =>
         [...appointmentsList].sort((a, b) => {
-            // Sort by approval status first
             if (a.approved !== b.approved) {
                 return a.approved ? -1 : 1;
             }
-            // If approval status is the same, sort by date
-            return new Date(a.date) - new Date(b.date); // Ascending order by date
+            return new Date(a.date) - new Date(b.date);
         });
 
     const handleApproval = async (id, status) => {
@@ -61,16 +63,20 @@ export default function Appointments() {
             });
 
             if (res.ok) {
-                setAppointments((prev) => sortAppointments(
-                    prev.map((appointment) =>
-                        appointment._id === id ? { ...appointment, approved: status } : appointment
+                setAppointments((prev) =>
+                    sortAppointments(
+                        prev.map((appointment) =>
+                            appointment._id === id ? { ...appointment, approved: status } : appointment
+                        )
                     )
-                ));
-                setAppointments1((prev) => sortAppointments(
-                    prev.map((appointment) =>
-                        appointment._id === id ? { ...appointment, approved: status } : appointment
+                );
+                setAppointments1((prev) =>
+                    sortAppointments(
+                        prev.map((appointment) =>
+                            appointment._id === id ? { ...appointment, approved: status } : appointment
+                        )
                     )
-                ));
+                );
             } else {
                 alert('Failed to update approval status');
             }
@@ -88,16 +94,29 @@ export default function Appointments() {
             });
 
             if (res.ok) {
-                setAppointments((prev) =>
-                    prev.map((appointment) =>
-                        appointment._id === id ? { ...appointment, done: status } : appointment
-                    )
-                );
-                setAppointments1((prev) =>
-                    prev.map((appointment) =>
-                        appointment._id === id ? { ...appointment, done: status } : appointment
-                    )
-                );
+                setAppointments((prev) => {
+                    const updatedAppointments = prev.filter((appointment) => appointment._id !== id);
+                    return updatedAppointments;
+                });
+
+                setAppointments1((prev) => {
+                    const updatedAppointments1 = prev.filter((appointment) => appointment._id !== id);
+                    return updatedAppointments1;
+                });
+
+                if (status) {
+                    const doneAppointment = [...appointments, ...appointments1].find((appt) => appt._id === id);
+                    if (doneAppointment) {
+                        setDoneAppointments((prev) => sortAppointments([...prev, { ...doneAppointment, done: true }]));
+                    }
+                } else {
+                    const undoneAppointment = doneAppointments.find((appt) => appt._id === id);
+                    if (undoneAppointment) {
+                        setAppointments((prev) => sortAppointments([...prev, { ...undoneAppointment, done: false }]));
+                        setAppointments1((prev) => sortAppointments([...prev, { ...undoneAppointment, done: false }]));
+                        setDoneAppointments((prev) => prev.filter((appt) => appt._id !== id));
+                    }
+                }
             } else {
                 alert('Failed to update done status');
             }
@@ -128,12 +147,15 @@ export default function Appointments() {
         );
     }
 
-    // Combine and sort appointments for rendering
+    const handlebut=async (id)=> {
+        router.push(`/officer/make-application/?id=${id}`)
+    }
+
     const sortedAppointments = sortAppointments([...appointments, ...appointments1]);
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-            <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg">
+        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
+            <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg mb-6">
                 <h1 className="text-3xl font-bold mb-4 text-center text-gray-100">All Booked Appointments</h1>
                 {sortedAppointments.length === 0 ? (
                     <div className="text-center text-white py-4">No appointments available.</div>
@@ -141,36 +163,28 @@ export default function Appointments() {
                     <table className="min-w-full table-auto text-gray-100 border-separate border-spacing-2">
                         <thead>
                             <tr className="bg-gray-700">
+                                <th className="py-2 px-4 text-left">Name</th>
                                 <th className="py-2 px-4 text-left">Service</th>
                                 <th className="py-2 px-4 text-left">Date</th>
                                 <th className="py-2 px-4 text-left">Register ID</th>
-                                <th className="py-2 px-4 text-left">Name</th>
                                 <th className="py-2 px-4 text-left">Role</th>
                                 <th className="py-2 px-4 text-left">Approved</th>
-                                <th className="py-2 px-4 text-left">Done</th>
                                 <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sortedAppointments.map((appointment) => (
-                                <a href={`/officer/make-application?id=${appointment.registerid}`}><tr key={appointment._id} className="hover:bg-gray-700">
-                                    <td className="py-2 px-4">{appointment.option}</td>
+                                <tr key={appointment._id} className="hover:bg-gray-700">
+                                    <td className="py-2 px-4">{appointment.name}</td>
+                                    <td onClick={()=>handlebut(appointment.registerid)} className="py-2 px-4 cursor-pointer">{appointment.option}</td>
                                     <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{appointment._id}</td>
-                                    <td className="py-2 px-4">{appointment.name}</td>
                                     <td className="py-2 px-4">{appointment.role}</td>
                                     <td className="py-2 px-4">
                                         {appointment.approved ? (
                                             <span className="text-green-400">Approved</span>
                                         ) : (
                                             <span className="text-red-400">Not Approved</span>
-                                        )}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {appointment.done ? (
-                                            <span className="text-green-400">Done</span>
-                                        ) : (
-                                            <span className="text-red-400">Not Done</span>
                                         )}
                                     </td>
                                     <td className="py-2 px-4 flex space-x-2">
@@ -205,10 +219,47 @@ export default function Appointments() {
                                                 Mark Done
                                             </button>
                                         )}
-
-                                        <a href={`/officer/make-application?id=${appointment.registerid}`}>Make application</a>
                                     </td>
-                                </tr></a>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg">
+                <h2 className="text-2xl font-bold mb-4 text-center text-gray-100">Done Appointments</h2>
+                {doneAppointments.length === 0 ? (
+                    <div className="text-center text-white py-4">No done appointments available.</div>
+                ) : (
+                    <table className="min-w-full table-auto text-gray-100 border-separate border-spacing-2">
+                        <thead>
+                            <tr className="bg-gray-700">
+                                <th className="py-2 px-4 text-left">Name</th>
+                                <th className="py-2 px-4 text-left">Service</th>
+                                <th className="py-2 px-4 text-left">Date</th>
+                                <th className="py-2 px-4 text-left">Register ID</th>
+                                <th className="py-2 px-4 text-left">Role</th>
+                                <th className="py-2 px-4 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {doneAppointments.map((appointment) => (
+                                <tr key={appointment._id} className="hover:bg-gray-700">
+                                    <td className="py-2 px-4">{appointment.name}</td>
+                                    <td className="py-2 px-4">{appointment.option}</td>
+                                    <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4">{appointment._id}</td>
+                                    <td className="py-2 px-4">{appointment.role}</td>
+                                    <td className="py-2 px-4">
+                                        <button
+                                            className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
+                                            onClick={() => handleDone(appointment._id, false)}
+                                        >
+                                            Mark Not Done
+                                        </button>
+                                    </td>
+                                </tr>
                             ))}
                         </tbody>
                     </table>
