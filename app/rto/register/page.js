@@ -12,7 +12,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    const res = await fetch("/api/auth/register", {
+    const res = await fetch("/api/auth/rto/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -21,7 +21,7 @@ const Register = () => {
     if (!res.ok) {
       setError(data.error);
     } else {
-      router.push("/login");
+      router.push("/rto/login");
     }
   };
 
@@ -53,7 +53,7 @@ const Register = () => {
           className="w-full p-2 border mb-3"
         />
         <button type="submit" className="bg-blue-500 text-white p-2 w-full">Register</button>
-        <a href="/login">Login here</a>
+        <a href="/rto/login">Login here</a>
       </form>
     </div>
   );

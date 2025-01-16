@@ -18,7 +18,7 @@ const Page = () => {
       method: "GET", // Pass FormData directly
     });
     const data=await res.json();
-    console.log("zzzzzzzzzzzzz",data.appro);
+    console.log("zzzzzzzzzzzzz",data.appro);       
     setApproved(data.appro);
   }
   app();

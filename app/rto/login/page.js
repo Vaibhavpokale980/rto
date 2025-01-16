@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
-const Register = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -12,32 +12,25 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    const res = await fetch("/api/auth/register", {
+    const res = await fetch("/api/auth/rto/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+
     const data = await res.json();
     if (!res.ok) {
       setError(data.error);
     } else {
-      router.push("/login");
+      router.push("/home");
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md text-black">
-        <h2 className="text-xl font-bold mb-4">Register</h2>
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md">
+        <h2 className="text-xl font-bold mb-4">Login</h2>
         {error && <p className="text-red-500">{error}</p>}
-        <input
-          type="text"
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="w-full p-2 border mb-3"
-        />
-
         <input
           type="email"
           placeholder="Email"
@@ -52,11 +45,11 @@ const Register = () => {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className="w-full p-2 border mb-3"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">Register</button>
-        <a href="/login">Login here</a>
+    <button type="submit" className="bg-blue-500 text-white p-2 w-full mb-5">Login</button>
+      <a href="/rto/register" className="text-black">Create account ??</a>
       </form>
     </div>
   );
 };
 
-export default Register;
+export default Login;
