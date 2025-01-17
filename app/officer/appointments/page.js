@@ -154,7 +154,7 @@ export default function Appointments() {
     const sortedAppointments = sortAppointments([...appointments, ...appointments1]);
 
     return (
-        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center pt-4">
             <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg mb-6">
                 <h1 className="text-3xl font-bold mb-4 text-center text-gray-100">All Booked Appointments</h1>
                 {sortedAppointments.length === 0 ? (
