@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
+import Navbar from '../components/Navbar';
 import { Spinner } from 'react-bootstrap'; // For loading spinner
 
 const QrCodeGenerator = () => {
@@ -56,9 +57,9 @@ const QrCodeGenerator = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-900 text-white">
+            <div className="flex items-center justify-center min-h-screen bg-white text-gray-900">
                 <div className="text-center p-6">
-                    <Spinner animation="border" variant="light" />
+                    <Spinner animation="border" variant="primary" />
                     <p className="mt-4 text-lg">Loading your information...</p>
                 </div>
             </div>
@@ -67,7 +68,7 @@ const QrCodeGenerator = () => {
 
     if (error) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-900 text-white">
+            <div className="flex items-center justify-center min-h-screen bg-white text-gray-900">
                 <div className="text-center p-6">
                     <p className="text-red-600 text-xl">{`Error: ${error}`}</p>
                     <p className="mt-2">Please try again later.</p>
@@ -77,13 +78,16 @@ const QrCodeGenerator = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">
-            <div className="w-full max-w-md bg-slate-800 shadow-lg rounded-lg p-8">
-                <h1 className="text-3xl font-semibold text-center text-white mb-8">User Information</h1>
+        <>
+        <Navbar/>
+        
+        <div className="min-h-[90%] flex items-center justify-center bg-white p-6">
+            <div className="w-full max-w-md bg-white shadow-xl rounded-lg p-8 border border-gray-200">
+                <h1 className="text-3xl font-semibold text-center text-gray-900 mb-8">User Information</h1>
 
                 {userInfo && (
                     <div className="space-y-4">
-                        <div className="text-sm font-medium text-gray-300">
+                        <div className="text-sm font-medium text-gray-600">
                             <p><strong>Name:</strong> {userInfo.name}</p>
                             <p><strong>Email:</strong> {userInfo.email}</p>
                             <p><strong>Position:</strong> {userInfo.position}</p>
@@ -97,6 +101,7 @@ const QrCodeGenerator = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

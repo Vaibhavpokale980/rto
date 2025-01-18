@@ -1,102 +1,140 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Corrected import
-import { Condiment } from 'next/font/google';
+import Navbar from '../components/Navbar';
+import { useRouter } from 'next/navigation';
+import { AiOutlineReload } from 'react-icons/ai';
+import { BiErrorCircle } from 'react-icons/bi';
 
 const ApplicationsPage = () => {
     const router = useRouter();
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [id, setregisterid] = useState(''); // Initializing registerid as an empty string
+    const [id, setRegisterId] = useState('');
 
+    // Verify user authentication
     useEffect(() => {
         const checkAuth = async () => {
-            const res = await fetch("/api/auth/verify-token");
-            if (!res.ok) {
-                router.push("/login");
-            }
-            else {
-                let data = await res.json();
-                console.log(data, " AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-                setregisterid(data.user.id); // Set registerid after successful response
-                console.log(data.user.id, "User ID fetched"); // Debug log for fetched user id
+            try {
+                const res = await fetch('/api/auth/verify-token');
+                if (!res.ok) {
+                    router.push('/login');
+                } else {
+                    const data = await res.json();
+                    setRegisterId(data.user.id);
+                }
+            } catch {
+                router.push('/login');
             }
         };
 
         checkAuth();
     }, [router]);
 
-    // Fetch all applications when the component mounts
+    // Fetch applications for the authenticated user
     useEffect(() => {
         const fetchApplications = async () => {
-            if (!id) return; // Ensure id is set before making the fetch request
+            if (!id) return;
+
             try {
-                const response = await fetch(`/api/auth/get-applications-user?id=${id}`);
-                if (!response.ok) {
+                const res = await fetch(`/api/auth/get-applications-user?id=${id}`);
+                if (!res.ok) {
                     throw new Error('Failed to fetch applications');
                 }
-                const data = await response.json();
 
-                // Log the data to ensure it's an array
-                console.log("Fetched data:", data);
-
-                // Check if data is an array and update the state
-                if (Array.isArray(data)) {
-                    setApplications(data);
-                } else {
-                    setError('Unexpected data format');
-                }
-            } catch (error) {
-                setError(error.message);
+                const data = await res.json();
+                setApplications(Array.isArray(data) ? data : []);
+            } catch (err) {
+                setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchApplications();
-    }, [id]); // Add `id` as dependency to trigger fetch when it changes
+    }, [id]);
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="spinner"></div>
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="mt-4 text-gray-600">Loading applications...</p>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="text-center text-red-500 font-bold">
-                <p>Error: {error}</p>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-red-600">
+                <BiErrorCircle size={50} />
+                <p className="text-lg font-semibold mt-4">{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="flex items-center gap-2 px-4 py-2 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                    <AiOutlineReload />
+                    Retry
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Applications</h1>
+        <>
+            <Navbar/>
+        <div className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-4 max-w-[70%]">
+            <h1 className="text-4xl font-bold mb-6 text-center text-blue-600">
+                Applications
+            </h1>
 
             {applications.length === 0 ? (
-                <p className="text-center text-xl text-gray-600">No applications found.</p>
+                <div className="text-center">
+                    <p className="text-xl text-gray-600 mb-4">No applications found.</p>
+                    <img
+                        src="/no-data.svg"
+                        alt="No data"
+                        className="mx-auto w-48 h-48 opacity-75"
+                    />
+                </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white shadow-lg rounded-lg">
+                <div className="overflow-x-auto shadow-md rounded-lg">
+                    <table className="min-w-full bg-white">
                         <thead>
                             <tr className="bg-blue-600 text-white">
-                                <th className="border px-6 py-4 text-left">Service</th>
-                                <th className="border px-6 py-4 text-left">Done Date</th>
-                                <th className="border px-6 py-4 text-left">Status</th>
-                                <th className="border px-6 py-4 text-left">Register ID</th>
+                                <th className="px-6 py-4 text-left">Service</th>
+                                <th className="px-6 py-4 text-left">Done Date</th>
+                                <th className="px-6 py-4 text-left">Status</th>
+                                <th className="px-6 py-4 text-left">Register ID</th>
                             </tr>
                         </thead>
                         <tbody>
                             {applications.map((application) => (
-                                <tr key={application._id} className="hover:bg-gray-100">
-                                    <td className="border px-6 py-3">{application.service}</td>
-                                    <td className="border px-6 py-3">{new Date(application.doneDate).toLocaleDateString()}</td>
-                                    <td className="border px-6 py-3">{application.status}</td>
-                                    <td className="border px-6 py-3">{application.registerid}</td>
+                                <tr
+                                    key={application._id}
+                                    className="hover:bg-gray-100 transition"
+                                >
+                                    <td className="border px-6 py-3 text-gray-700">
+                                        {application.service}
+                                    </td>
+                                    <td className="border px-6 py-3 text-gray-700">
+                                        {new Date(application.doneDate).toLocaleDateString()}
+                                    </td>
+                                    <td className="border px-6 py-3">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-white text-sm ${
+                                                application.status === 'Completed'
+                                                    ? 'bg-green-500'
+                                                    : 'bg-yellow-500'
+                                            }`}
+                                        >
+                                            {application.status}
+                                        </span>
+                                    </td>
+                                    <td className="border px-6 py-3 text-gray-700">
+                                        {application.registerid}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -104,6 +142,7 @@ const ApplicationsPage = () => {
                 </div>
             )}
         </div>
+        </>
     );
 };
 

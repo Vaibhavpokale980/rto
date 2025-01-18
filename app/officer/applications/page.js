@@ -1,31 +1,36 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/app/components/Navbar';
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
-  const [registerid, setregisterid] = useState('');
+  const [registerid, setRegisterId] = useState('');
   const [formData, setFormData] = useState({
     service: '',
     doneDate: '',
     status: '',
     registerid: '',
   });
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const res = await fetch("/api/auth/verify-token");
-      if (!res.ok) {
-        router.push("/login");
-      } else {
-        const data = await res.json();
-        setregisterid(data.user.id); // Set registerid
+      try {
+        const res = await fetch('/api/auth/verify-token');
+        if (!res.ok) {
+          router.push('/login');
+        } else {
+          const data = await res.json();
+          setRegisterId(data.user.id);
+        }
+      } catch {
+        router.push('/login');
       }
     };
 
@@ -33,13 +38,13 @@ const ApplicationsPage = () => {
   }, [router]);
 
   useEffect(() => {
-    if (!registerid) return; // Ensure registerid is available before fetching applications
+    if (!registerid) return;
 
     const fetchApplications = async () => {
       try {
         const response = await fetch(`/api/auth/get-applications?id=${registerid}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch applications");
+          throw new Error('Failed to fetch applications');
         }
         const data = await response.json();
         setApplications(data);
@@ -51,7 +56,7 @@ const ApplicationsPage = () => {
     };
 
     fetchApplications();
-  }, [registerid]); // Depend on registerid
+  }, [registerid]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,8 +74,6 @@ const ApplicationsPage = () => {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
-
       if (response.ok) {
         alert('Application updated successfully!');
         setApplications((prev) =>
@@ -78,7 +81,7 @@ const ApplicationsPage = () => {
             app._id === selectedApplication._id ? { ...app, ...formData } : app
           )
         );
-        setIsModalOpen(false); // Close modal
+        setIsModalOpen(false);
         setSelectedApplication(null);
         setFormData({
           service: '',
@@ -87,48 +90,59 @@ const ApplicationsPage = () => {
           registerid: '',
         });
       } else {
-        alert(result.error || 'Something went wrong!');
+        alert('Failed to update application');
       }
-    } catch (error) {
-      console.error('Error updating application:', error);
-      alert('Something went wrong!');
+    } catch {
+      alert('Error updating application');
     }
   };
 
-  if (loading) {
-    return <div>Loading applications...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Applications</h1>
-
-      {applications.length === 0 ? (
-        <p className="text-center text-lg text-gray-600">No applications available.</p>
+    <>
+    <Navbar/>
+    <div className="container mx-auto p-6 space-y-6 max-w-[80%]">
+      <h1 className="text-4xl font-bold text-center text-blue-600">Applications</h1>
+      {loading ? (
+        <div className="text-center text-gray-500">Loading applications...</div>
+      ) : error ? (
+        <div className="text-center text-red-500">Error: {error}</div>
+      ) : applications.length === 0 ? (
+        <div className="text-center text-gray-500">
+          <p>No applications available.</p>
+          <img src="/no-data.svg" alt="No data" className="w-48 h-48 mx-auto mt-4" />
+        </div>
       ) : (
-        <div className="overflow-x-auto bg-white shadow-lg rounded-lg border">
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full table-auto text-left">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700 border-b">Service</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700 border-b">Done Date</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700 border-b">Status</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700 border-b">Actions</th>
+                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Service</th>
+                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Done Date</th>
+                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody>
               {applications.map((application) => (
-                <tr key={application._id} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-3">{application.service}</td>
-                  <td className="px-6 py-3">{new Date(application.doneDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-3">{application.status}</td>
-                  <td className="px-6 py-3">
+                <tr key={application._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">{application.service}</td>
+                  <td className="px-6 py-4">
+                    {new Date(application.doneDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full ${
+                        application.status === 'Completed'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-yellow-500 text-white'
+                      }`}
+                    >
+                      {application.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <button
-                      className="bg-blue-500 text-white py-1 px-4 rounded transition-transform hover:scale-105"
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                       onClick={() => {
                         setSelectedApplication(application);
                         setFormData({
@@ -137,7 +151,7 @@ const ApplicationsPage = () => {
                           status: application.status,
                           registerid: application.registerid,
                         });
-                        setIsModalOpen(true); // Open the modal
+                        setIsModalOpen(true);
                       }}
                     >
                       Edit
@@ -150,45 +164,38 @@ const ApplicationsPage = () => {
         </div>
       )}
 
-      {/* Modal for editing the application */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-gray-900 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-bold text-center mb-4">Edit Application</h2>
+            <h2 className="text-xl font-bold text-center">Edit Application</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="service" className="block text-sm font-medium text-gray-700">Service</label>
+                <label className="block text-sm font-medium">Service</label>
                 <input
                   type="text"
-                  id="service"
                   name="service"
                   value={formData.service}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                  required
+                  className="w-full mt-1 p-2 border rounded"
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="doneDate" className="block text-sm font-medium text-gray-700">Done Date</label>
+                <label className="block text-sm font-medium">Done Date</label>
                 <input
                   type="date"
-                  id="doneDate"
                   name="doneDate"
                   value={formData.doneDate}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                  required
+                  className="w-full mt-1 p-2 border rounded"
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                <label className="block text-sm font-medium">Status</label>
                 <select
-                  id="status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                  required
+                  className="w-full mt-1 p-2 border rounded"
                 >
                   <option value="">Select Status</option>
                   <option value="Pending">Pending</option>
@@ -199,12 +206,12 @@ const ApplicationsPage = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  className="bg-gray-300 py-2 px-4 rounded"
-                  onClick={() => setIsModalOpen(false)} // Close modal
+                  className="bg-gray-300 px-4 py-2 rounded"
+                  onClick={() => setIsModalOpen(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
                   Update
                 </button>
               </div>
@@ -213,6 +220,7 @@ const ApplicationsPage = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

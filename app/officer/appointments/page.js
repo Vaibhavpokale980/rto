@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Navbar from '@/app/components/Navbar';
 import { useRouter } from 'next/navigation';
 
 export default function Appointments() {
@@ -9,7 +10,7 @@ export default function Appointments() {
     const [doneAppointments, setDoneAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const router=useRouter();
+    const router = useRouter();
 
     // Fetch both sets of appointments
     useEffect(() => {
@@ -127,10 +128,10 @@ export default function Appointments() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-800">
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
                 <div className="text-center">
                     <div className="animate-spin border-t-4 border-b-4 border-blue-500 w-16 h-16 rounded-full mx-auto"></div>
-                    <p className="text-white mt-4">Loading appointments...</p>
+                    <p className="text-gray-700 mt-4">Loading appointments...</p>
                 </div>
             </div>
         );
@@ -138,7 +139,7 @@ export default function Appointments() {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-800">
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
                 <div className="bg-red-500 text-white p-4 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold">Error</h2>
                     <p>{error}</p>
@@ -147,22 +148,23 @@ export default function Appointments() {
         );
     }
 
-    const handlebut=async (id)=> {
-        router.push(`/officer/make-application/?id=${id}`)
-    }
+    const handlebut = async (id) => {
+        router.push(`/officer/make-application/?id=${id}`);
+    };
 
     const sortedAppointments = sortAppointments([...appointments, ...appointments1]);
 
     return (
-        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center pt-4">
-            <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg mb-6">
-                <h1 className="text-3xl font-bold mb-4 text-center text-gray-100">All Booked Appointments</h1>
+        <><Navbar/>
+        <div className="min-h-[80%] bg-white flex flex-col items-center justify-center pt-4">
+            <div className="mx-auto p-6 w-full max-w-6xl bg-white shadow-xl rounded-lg mb-6">
+                <h1 className="text-3xl font-semibold mb-4 text-center text-gray-900">All Booked Appointments</h1>
                 {sortedAppointments.length === 0 ? (
-                    <div className="text-center text-white py-4">No appointments available.</div>
+                    <div className="text-center text-gray-500 py-4">No appointments available.</div>
                 ) : (
-                    <table className="min-w-full table-auto text-gray-100 border-separate border-spacing-2">
+                    <table className="min-w-full table-auto text-gray-700 border-separate border-spacing-2">
                         <thead>
-                            <tr className="bg-gray-700">
+                            <tr className="bg-gray-200">
                                 <th className="py-2 px-4 text-left">Name</th>
                                 <th className="py-2 px-4 text-left">Service</th>
                                 <th className="py-2 px-4 text-left">Date</th>
@@ -174,30 +176,30 @@ export default function Appointments() {
                         </thead>
                         <tbody>
                             {sortedAppointments.map((appointment) => (
-                                <tr key={appointment._id} className="hover:bg-gray-700">
+                                <tr key={appointment._id} className="hover:bg-gray-100">
                                     <td className="py-2 px-4">{appointment.name}</td>
-                                    <td onClick={()=>handlebut(appointment.registerid)} className="py-2 px-4 cursor-pointer">{appointment.option}</td>
+                                    <td onClick={() => handlebut(appointment.registerid)} className="py-2 px-4 cursor-pointer">{appointment.option}</td>
                                     <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{appointment._id}</td>
                                     <td className="py-2 px-4">{appointment.role}</td>
                                     <td className="py-2 px-4">
                                         {appointment.approved ? (
-                                            <span className="text-green-400">Approved</span>
+                                            <span className="text-green-500">Approved</span>
                                         ) : (
-                                            <span className="text-red-400">Not Approved</span>
+                                            <span className="text-red-500">Pending</span>
                                         )}
                                     </td>
-                                    <td className="py-2 px-4 flex space-x-2">
+                                    <td className="py-2 px-4 flex space-x-2 justify-around">
                                         {appointment.approved ? (
                                             <button
-                                                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
+                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                                                 onClick={() => handleApproval(appointment._id, false)}
                                             >
                                                 Reject
                                             </button>
                                         ) : (
                                             <button
-                                                className="bg-green-500 text-white px-4 py-1 rounded-md hover:bg-green-600"
+                                                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                                                 onClick={() => handleApproval(appointment._id, true)}
                                             >
                                                 Approve
@@ -206,14 +208,14 @@ export default function Appointments() {
 
                                         {appointment.done ? (
                                             <button
-                                                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
+                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                                                 onClick={() => handleDone(appointment._id, false)}
                                             >
                                                 Mark Not Done
                                             </button>
                                         ) : (
                                             <button
-                                                className="bg-green-500 text-white px-4 py-1 rounded-md hover:bg-green-600"
+                                                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                                                 onClick={() => handleDone(appointment._id, true)}
                                             >
                                                 Mark Done
@@ -227,14 +229,14 @@ export default function Appointments() {
                 )}
             </div>
 
-            <div className="mx-auto p-6 w-full max-w-6xl bg-gray-800 shadow-md rounded-lg">
-                <h2 className="text-2xl font-bold mb-4 text-center text-gray-100">Done Appointments</h2>
+            <div className="mx-auto p-6 w-full max-w-6xl bg-white shadow-xl rounded-lg">
+                <h2 className="text-2xl font-semibold mb-4 text-center text-gray-900">Done Appointments</h2>
                 {doneAppointments.length === 0 ? (
-                    <div className="text-center text-white py-4">No done appointments available.</div>
+                    <div className="text-center text-gray-500 py-4">No done appointments available.</div>
                 ) : (
-                    <table className="min-w-full table-auto text-gray-100 border-separate border-spacing-2">
+                    <table className="min-w-full table-auto text-gray-700 border-separate border-spacing-2">
                         <thead>
-                            <tr className="bg-gray-700">
+                            <tr className="bg-gray-200">
                                 <th className="py-2 px-4 text-left">Name</th>
                                 <th className="py-2 px-4 text-left">Service</th>
                                 <th className="py-2 px-4 text-left">Date</th>
@@ -245,7 +247,7 @@ export default function Appointments() {
                         </thead>
                         <tbody>
                             {doneAppointments.map((appointment) => (
-                                <tr key={appointment._id} className="hover:bg-gray-700">
+                                <tr key={appointment._id} className="hover:bg-gray-100">
                                     <td className="py-2 px-4">{appointment.name}</td>
                                     <td className="py-2 px-4">{appointment.option}</td>
                                     <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
@@ -253,7 +255,7 @@ export default function Appointments() {
                                     <td className="py-2 px-4">{appointment.role}</td>
                                     <td className="py-2 px-4">
                                         <button
-                                            className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
+                                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                                             onClick={() => handleDone(appointment._id, false)}
                                         >
                                             Mark Not Done
@@ -266,5 +268,6 @@ export default function Appointments() {
                 )}
             </div>
         </div>
+        </>
     );
 }

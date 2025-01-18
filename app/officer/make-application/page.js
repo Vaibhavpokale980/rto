@@ -56,7 +56,7 @@ const ServiceFormPage = (req) => {
 
     return (
         <div className="main h-screen w-full relative bg-gray-100 pt-10">
-            <div className="container shadow-xl border rounded-xl h-[60%] justify-center w-1/2 p-3 px-6 py-6 bg-white mx-auto flex flex-col">
+            <div className="container shadow-xl border rounded-xl h-[70%] justify-center w-1/2 p-3 px-6 py-6 bg-white mx-auto flex flex-col">
                 <h1 className="font-bold text-2xl mb-8 mx-auto text-center mt-4">Service Form</h1>
 
                 <label className="text-xl px-6 mb-2">Service</label>

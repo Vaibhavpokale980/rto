@@ -1,27 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
 import { useRouter } from 'next/navigation';
 
 export default function AppointmentBooking() {
     const router = useRouter();
-    const [registerid, setregisterid] = useState(''); // Initializing registerid as an empty string
-    const [role,setrole]=useState("citizen")
-    const [namer,setnamer]=useState("user");
+    const [registerid, setregisterid] = useState('');
+    const [role, setrole] = useState("citizen");
+    const [namer, setnamer] = useState("user");
 
     useEffect(() => {
         const checkAuth = async () => {
             const res = await fetch("/api/auth/verify-token2");
             if (!res.ok) {
                 router.push("/login");
-            }
-            else {
+            } else {
                 let data = await res.json();
-                setregisterid(data.user.id); // Set registerid after successful response
-                console.log(data.user.id, "User ID fetched",data.rolex); // Debug log for fetched user id
-                setrole(data.rolex)
-                setnamer(data.namex)
-                console.log("nnnnnnnnnnnnnnnnnnnnnn",registerid)
+                setregisterid(data.user.id);
+                setrole(data.rolex);
+                setnamer(data.namex);
             }
         };
 
@@ -39,10 +37,7 @@ export default function AppointmentBooking() {
     const cities = ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Kolhapur"];
 
     useEffect(() => {
-        // Get today's date
         const today = new Date();
-
-        // Format date as YYYY-MM-DD
         const formatDate = (date) => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -55,33 +50,33 @@ export default function AppointmentBooking() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value }); // Update formData when fields change
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const updatedFormData = { ...formData, registerid: registerid, roler: role, name: namer };
 
-        // Before submitting the form, ensure that registerid is in the form data
-        const updatedFormData = { ...formData, registerid: registerid,roler:role,name:namer };
-        // console.log("tttttttttttttttttt",role);
-
-        console.log('Appointment Details:', updatedFormData); // Log the updated form data
-        
         const res = await fetch("/api/auth/book-appointment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedFormData),
         });
 
-        if (!res) alert("something went wrong");
-        else alert('Appointment booked successfully!');
+        if (!res.ok) {
+            alert("Something went wrong");
+        } else {
+            alert('Appointment booked successfully!');
+        }
     };
 
     return (
-        <div className='min-h-screen bg-slate-900 flex w-full h-full items-center'>
-            <div className="mx-auto p-6 h-full w-[30%]  bg-gray-200 shadow-md rounded-lg">
-                <h1 className="text-2xl font-bold mb-4 flex justify-center pb-12 text-gray-800">Book an Appointment</h1>
-                <form onSubmit={handleSubmit} className="space-y-10">
+        <>
+            <Navbar/>
+        <div className='min-h-screen bg-gray-50 flex justify-center items-center'>
+            <div className="w-full max-w-lg p-8 bg-white shadow-xl rounded-lg">
+                <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Book an Appointment</h1>
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Service Option Dropdown */}
                     <div>
                         <label htmlFor="option" className="block text-sm font-medium text-gray-700">
@@ -92,7 +87,7 @@ export default function AppointmentBooking() {
                             name="option"
                             value={formData.option}
                             onChange={handleChange}
-                            className="mt-1 block h-10 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className="mt-1 block w-full h-12 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                             required
                         >
                             <option value="" disabled>Choose an option</option>
@@ -113,7 +108,7 @@ export default function AppointmentBooking() {
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
-                            className="mt-1 block h-10 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className="mt-1 block w-full h-12 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                             required
                         >
                             <option value="" disabled>Choose a city</option>
@@ -135,7 +130,7 @@ export default function AppointmentBooking() {
                             value={formData.date}
                             onChange={handleChange}
                             min={minDate}
-                            className="mt-1 h-10 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className="mt-1 block w-full h-12 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                             required
                         />
                     </div>
@@ -143,12 +138,13 @@ export default function AppointmentBooking() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300"
                     >
                         Book Appointment
                     </button>
                 </form>
             </div>
         </div>
+        </>
     );
 }
